@@ -1,0 +1,7 @@
+aws:
+  s3:
+    credentials:
+      accessKey: ${{secrets.AWS_S3_ACCESS_KEY}}
+      secretKey: ${{secrets.AWS_S3_SECRET_KEY}}
+      region: ${{secrets.AWS_S3_REGION}}
+    bucket: ${{secrets.AWS_S3_BUCKET}}
