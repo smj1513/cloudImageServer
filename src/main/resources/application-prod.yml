@@ -5,3 +5,17 @@ aws:
       secretKey: ${{secrets.AWS_S3_SECRET_KEY}}
       region: ${{secrets.AWS_S3_REGION}}
     bucket: ${{secrets.AWS_S3_BUCKET}}
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${{secrets.DB_URL}}
+    username: ${{secrets.DB_USERNAME}}
+    password: ${{secrets.DB_PASSWORD}}

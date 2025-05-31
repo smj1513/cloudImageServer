@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    {{> layout/_head}} {{! 공통 head partial 포함 }}
+    {{#pageTitle}} {{! 모델에 pageTitle이 있으면 해당 페이지 제목 사용 }}
+        <title>{{.}} - Cloud Image Server</title>
+    {{/pageTitle}}
+    {{^pageTitle}} {{! pageTitle이 없으면 기본 제목 사용 }}
+        <title>Cloud Image Server</title>
+    {{/pageTitle}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+{{> layout/_nav}} {{! 공통 nav partial 포함 }}
+
+<main class="container main-content-area py-4">
+    {{{body}}} {{! 여기에 각 페이지의 실제 내용이 삽입됩니다 (이스케이프 없이 HTML 그대로 삽입) }}
+</main>
+
+<footer class="footer mt-auto py-3 bg-light">
+    <div class="container text-center">
+        <span class="text-muted">© 2024 Cloud Image Server</span>
+    </div>
+</footer>
+
+{{> layout/_scripts}} {{! 공통 scripts partial 포함 }}
+</body>
+</html>
