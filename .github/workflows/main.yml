@@ -95,6 +95,7 @@ jobs:
                   - AWS_S3_ACCESS_KEY=${AWS_S3_ACCESS_KEY} # .env 파일에서 읽어옴
                   - AWS_S3_SECRET_KEY=${AWS_S3_SECRET_KEY} # .env 파일에서 읽어옴
                   - AWS_S3_REGION=${AWS_S3_REGION} # .env 파일에서 읽어옴
+                  - AWS_SE_BUCKET=${AWS_S3_BUCKET}
                 depends_on:
                   - mysql
                 restart: unless-stopped
