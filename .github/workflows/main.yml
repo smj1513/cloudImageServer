@@ -68,8 +68,8 @@ jobs:
           script: |
             # 환경 변수 설정
             echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > .env
-            echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
-            echo "MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME}}" >> .env
+            echo "MYSQL_ROOT_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "MYSQL_USERNAME=${{ secrets.DB_USERNAME}}" >> .env
             
             # Docker Compose 파일 복사
             cat > docker-compose.yml << 'EOL'
