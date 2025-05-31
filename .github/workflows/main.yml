@@ -80,7 +80,7 @@ jobs:
                 image: ${DOCKER_USERNAME}/cloud-image-server:latest
                 container_name: cloud-image-server
                 ports:
-                  - "8080:8080"
+                  - "443:8080"
                 volumes:
                   - ./upload:/app/upload
                 environment:
