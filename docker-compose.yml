@@ -19,13 +19,14 @@ services:
     image: ${DOCKER_USERNAME}/cloud-image-server:latest
     container_name: cloud-image-server
     ports:
-      - "8080:8080"
+      - "80:8080"
     volumes:
       - ./upload:/app/upload
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/cloud_image?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
       - SPRING_DATASOURCE_USERNAME=${MYSQL_USER_NAME}
       - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+      - ACTIVE_PROFILE=prod
     depends_on:
       - mysql
     restart: unless-stopped

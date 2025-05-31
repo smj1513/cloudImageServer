@@ -112,6 +112,6 @@ jobs:
             echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             
             # Docker Compose로 서비스 시작
-            docker-compose down
+            docker-compose down --rmi all
             docker-compose pull
             docker-compose up -d
