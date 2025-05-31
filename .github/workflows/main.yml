@@ -68,7 +68,7 @@ jobs:
           script: |
             # 환경 변수 설정
             echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > .env
-            echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
+            echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
             echo "MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME}}" >> .env
             
             # Docker Compose 파일 복사
@@ -86,7 +86,7 @@ jobs:
                 environment:
                   - SPRING_DATASOURCE_URL=jdbc:mysql://cloud-image-mysql:3306/cloud_image?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
                   - SPRING_DATASOURCE_USERNAME=${MYSQL_USERNAME}
-                  - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+                  - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD}
                   - ACTIVE_PROFILE=prod
                 depends_on:
                   - mysql
@@ -98,7 +98,7 @@ jobs:
                 ports:
                   - "3306:3306"
                 environment:
-                  - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+                  - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
                   - MYSQL_DATABASE=cloud_image
                 volumes:
                   - mysql-data:/var/lib/mysql
