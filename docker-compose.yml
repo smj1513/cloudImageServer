@@ -1,9 +1,29 @@
 version: '3.8'
 
 services:
+  app:
+    image: ${DOCKER_USERNAME}/cloud-image-server:latest
+    container_name: cloud-image-server
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./upload:/app/upload
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://cloud-image-mysql:3306/cloud_image?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - ACTIVE_PROFILE=prod
+      - AWS_S3_ACCESS_KEY=${AWS_S3_ACCESS_KEY} # .env 파일에서 읽어옴
+      - AWS_S3_SECRET_KEY=${AWS_S3_SECRET_KEY} # .env 파일에서 읽어옴
+      - AWS_S3_REGION=${AWS_S3_REGION} # .env 파일에서 읽어옴
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+    depends_on:
+      - mysql
+    restart: unless-stopped
+
   mysql:
     image: mysql:8.0
-    container_name: mysql
+    container_name: cloud-image-mysql
     ports:
       - "3306:3306"
     environment:
@@ -11,25 +31,8 @@ services:
       - MYSQL_DATABASE=cloud_image
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./mysql/init:/docker-entrypoint-initdb.d
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     restart: unless-stopped
 
-  app:
-    image: ${DOCKER_USERNAME}/cloud-image-server:latest
-    container_name: cloud-image-server
-    ports:
-      - "80:8080"
-    volumes:
-      - ./upload:/app/upload
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/cloud_image?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
-      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER_NAME}
-      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
-      - ACTIVE_PROFILE=prod
-    depends_on:
-      - mysql
-    restart: unless-stopped
-
 volumes:
-  mysql-data: 
+  mysql-data:
