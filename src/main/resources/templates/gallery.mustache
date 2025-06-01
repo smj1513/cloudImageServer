@@ -2,10 +2,8 @@
 <html>
 <head>
     {{> layout/_head}} <!-- layout 폴더의 _head.mustache 파일을 포함 -->
-    <!-- Font Awesome CDN (아이콘 사용을 위해 추가) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        /* --- (CSS 스타일은 이전과 동일하게 유지하거나 필요에 따라 수정) --- */
         .upload-button-section {
             margin-bottom: 20px;
         }
@@ -79,6 +77,35 @@
             text-align: center;
         }
 
+        /* 기존 .card-body 아래 또는 다른 스타일 규칙들과 함께 추가 */
+        .card {
+            position: relative; /* 자식 .delete-image-btn의 absolute 위치 기준 */
+        }
+
+        .delete-image-btn {
+            position: absolute;
+            top: 8px;        /* 카드 내부 상단에서의 간격 */
+            right: 8px;       /* 카드 내부 우측에서의 간격 */
+            width: 24px;
+            height: 24px;
+            background-color: rgba(0, 0, 0, 0.5); /* 반투명 검은색 배경 */
+            color: white;
+            border: none;
+            border-radius: 50%; /* 원형 버튼 */
+            cursor: pointer;
+            font-size: 14px;    /* 'X' 문자 크기 */
+            line-height: 24px;  /* 'X' 문자 수직 중앙 정렬 */
+            text-align: center;
+            padding: 0;
+            z-index: 10;        /* 다른 요소들보다 위에 표시 */
+            transition: background-color 0.2s ease-in-out; /* 부드러운 색상 변경 효과 */
+        }
+
+        .delete-image-btn:hover {
+            background-color: rgba(255, 0, 0, 0.7); /* 마우스 오버 시 반투명 빨간색 배경 */
+        }
+
+
         /* 알림 메시지 스타일 (선택 사항) */
         .upload-feedback {
             margin-top: 10px;
@@ -120,6 +147,7 @@
                 {{#images}}
                     <div class="col-lg-4 col-md-6 gallery-item">
                         <div class="card">
+                            <button class="delete-image-btn" data-image-id="{{id}}" title="이미지 삭제">&times;</button>
                             <img src="https://kit-cloud-image.s3.ap-northeast-2.amazonaws.com/{{path}}" class="card-img-top" alt="Uploaded image">
                             <div class="card-body">
                                 <p class="card-text">{{name}}</p>
@@ -232,6 +260,73 @@
             uploadFeedbackDiv.style.display = 'none';
             uploadFeedbackDiv.textContent = '';
             uploadFeedbackDiv.className = 'upload-feedback';
+        }
+
+
+        const galleryImageRow = document.querySelector('.col-lg-9.col-md-8 .row'); // 이미지 카드들이 포함된 부모 요소
+
+        if (galleryImageRow) {
+            galleryImageRow.addEventListener('click', async function(event) {
+                if (event.target.classList.contains('delete-image-btn')) {
+                    const button = event.target;
+                    const imageItem = button.closest('.gallery-item'); // 삭제할 이미지의 부모 .gallery-item 요소
+                    const imageId = button.dataset.imageId; // data-image-path 속성에서 이미지 경로 가져오기
+
+                    if (!imageId) {
+                        console.error('삭제할 이미지 id를 찾을 수 없습니다.');
+                        alert('이미지 정보를 찾을 수 없어 삭제할 수 없습니다.');
+                        return;
+                    }
+
+                    // 사용자에게 삭제 확인
+                    if (confirm(`이미지를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`)) {
+                        // 1. 클라이언트 측에서 이미지 요소 제거
+                        if (imageItem) {
+                            imageItem.remove();
+                            // showFeedback 함수는 이미 파일 내에 존재합니다.
+                            showFeedback(`이미지가 화면에서 제거되었습니다.`, 'success');
+                        } else {
+                            console.error('삭제할 이미지 아이템을 DOM에서 찾지 못했습니다.');
+                            // UI에서 즉시 피드백
+                            alert('화면에서 이미지를 제거하는 데 실패했습니다.');
+                            return; // 서버 요청을 진행하지 않음
+                        }
+
+                        // 2. 서버에 삭제 요청 보내기 (주의: 실제 서버 API 엔드포인트로 수정 필요)
+                        try {
+                            // '/delete-image'는 예시 엔드포인트입니다. 실제 서버의 이미지 삭제 API 경로로 변경해야 합니다.
+                            // 이미지 경로는 쿼리 파라미터 또는 요청 본문(body)을 통해 전달할 수 있습니다.
+                            const response = await fetch(`/${imageId}`, {
+                                method: 'DELETE', // HTTP DELETE 메서드 사용 권장
+                                // 필요한 경우 헤더 추가:
+                                // headers: {
+                                //     'Authorization': 'Bearer YOUR_TOKEN_HERE', // 인증 토큰 등
+                                //     'Content-Type': 'application/json'
+                                // }
+                            });
+
+                            if (response.ok) {
+                                console.log(`서버에서 이미지 삭제 성공`);
+                                // 서버 삭제 성공에 대한 추가적인 피드백이 필요하면 여기에 작성합니다.
+                                // 예를 들어, showFeedback(`'${imagePath}' 이미지가 서버에서도 성공적으로 삭제되었습니다.`, 'success');
+                                // 일반적으로 화면에서 이미 제거했으므로, 성공 로그만 남겨도 충분할 수 있습니다.
+                            } else {
+                                const errorText = await response.text();
+                                console.error(`서버에서 이미지 삭제 실패:`, response.status, errorText);
+                                // 사용자에게 서버 삭제 실패 알림
+                                // 이미 화면에서 제거된 아이템에 대한 처리 방안을 고려해야 합니다.
+                                // (예: 사용자에게 알리고 페이지 새로고침 유도, 또는 제거된 아이템 복구 시도)
+                                showFeedback(`서버에서 이미지 삭제에 실패했습니다: ${errorText}. 화면에서는 제거되었으나, 서버에는 파일이 남아있을 수 있습니다.`, 'error');
+                            }
+                        } catch (error) {
+                            console.error('이미지 삭제 요청 중 네트워크 오류 또는 클라이언트 측 오류 발생:', error);
+                            showFeedback('이미지 삭제 요청 중 오류가 발생했습니다. 네트워크 연결을 확인해주세요.', 'error');
+                        }
+                    }
+                }
+            });
+        } else {
+            console.warn("이미지 갤러리 영역을 찾을 수 없어, 삭제 버튼 이벤트 리스너를 설정하지 못했습니다.");
         }
     });
 </script>

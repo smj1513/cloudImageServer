@@ -1,13 +1,12 @@
 package kit.cloud.imageserver.file.interfaces.controller;
 
 import kit.cloud.imageserver.file.application.FileAppService;
+import kit.cloud.imageserver.file.interfaces.response.FileResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
@@ -25,6 +24,13 @@ public class FileController {
 	@GetMapping("/upload")
 	public String uploadForm() {
 		return "upload";
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<FileResponse> deleteFile(@PathVariable Long id){
+		FileResponse fileResponse = fileService.deleteFile(id);
+
+		return ResponseEntity.ok(fileResponse);
 	}
 
 	@PostMapping("/upload") // POST 요청과 /upload 경로를 매핑
